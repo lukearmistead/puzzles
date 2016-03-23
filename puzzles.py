@@ -69,6 +69,7 @@ def max_stock_profit(prices):
             top_profit = profit
     return top_profit
          
+
 def product_index(entries):
     '''
     for each item, find the product of every other item
@@ -84,5 +85,14 @@ def product_index(entries):
         products.append(product)
     return products
 
+def diagonal_difference(mat):
+    ''' takes a square matrix and returns the absolute difference between the
+    sums of its diagonals'''
+    product = 1
+    other_product = 1
+    for i, row in enumerate(mat):
+        product += row[i]
+        other_product += row[len(row) - i - 1]
+    return abs(product) - abs(other_product)
 if __name__ == '__main__':
-    pass
+    print diagonal_difference([[1,2,3],[4,5,6],[7,8,9]])
