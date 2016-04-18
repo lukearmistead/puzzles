@@ -94,5 +94,56 @@ def diagonal_difference(mat):
         product += row[i]
         other_product += row[len(row) - i - 1]
     return abs(product) - abs(other_product)
+
+def rectangle_overlap(rec1, rec2):
+    ''' takes the coordinates and dimensions of two rectangles as a dictionary
+    and returns the coordinates and dimensions of the overlapping space
+    input example:
+    my_rectangle = {
+        # coordinates of bottom-left corner
+        'left_x': 1,
+        'bottom_y': 5,
+        # width and height
+        'width': 10,
+        'height': 4,
+    }
+    interviewcake.com/question/python/rectangular-love
+    '''
+    rec_out = {}
+    # establish right and bottom coordinates for output rectangle (rec_out)
+    rec_out['left_x'] = max(rec1['left_x'], rec2['left_x'])
+    rec_out['bottom_y'] = max(rec1['bottom_y'], rec2['bottom_y'])
+    # find the leftmost & top coordinates for input rectangles
+    rec1['right_x'] = rec1['left_x'] + rec1['width']
+    print rec1['right_x']
+    rec1['top_y'] = rec1['bottom_y'] + rec1['height']
+    print rec1['top_y']
+    rec2['right_x'] = rec2['left_x'] + rec2['width']
+    print rec2['right_x']
+    rec2['top_y'] = rec2['bottom_y'] + rec2['height']
+    print rec2['top_y']
+    # get output rectangle dimensions
+    rec_out['height'] = min(rec1['right_x'], rec1['right_x']) - rec_out['left_x']
+    rec_out['width'] = min(rec1['top_y'], rec1['top_y']) - rec_out['bottom_y'] 
+    return rec_out    
+
 if __name__ == '__main__':
-    print diagonal_difference([[1,2,3],[4,5,6],[7,8,9]])
+    rec1 = {
+        # coordinates of bottom-left corner
+        'left_x': 0,
+        'bottom_y': 5,
+        # width and height
+        'width': 10,
+        'height': 10
+    }
+    rec2 = {
+        # coordinates of bottom-left corner
+        'left_x': 1,
+        'bottom_y': 6,
+        # width and height
+        'width': 10,
+        'height': 10
+    }
+
+    print rectangle_overlap(rec1, rec2)
+
