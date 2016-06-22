@@ -90,3 +90,46 @@ WHERE (users.id, users.id) NOT IN (
 	WHERE created > DATE('2015-09-30') - INTERVAL 90 DAY
 	ORDER BY `trades`.`created` DESC
 )
+
+/* Returns highly fted beers in your state that aren't in your inventory */
+--
+
+SELECT beer_id, breweries.state AS ftstate, COUNT(*) as cnt
+FROM ftiso
+LEFT JOIN beers
+ON ftiso.beer_id = beers.id
+LEFT JOIN breweries
+ON beers.brewery_id = breweries.id
+GROUP BY ftiso.beer_id, breweries.state
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT store_shop.id, store_shop.state, popularity.beer_id, popularity.state, popularity.cnt
+FROM store_items
+LEFT JOIN store_shop
+ON store_items.shop_id = store_shop.id
+LEFT JOIN (
+    SELECT beer_id, breweries.state AS state, COUNT(*) as cnt
+    FROM ftiso
+    LEFT JOIN beers
+    ON ftiso.beer_id = beers.id
+    LEFT JOIN breweries
+    ON beers.brewery_id = breweries.id
+    GROUP BY ftiso.beer_id, breweries.state
+    ) AS popularity
+ON store_shop.state = popularity.state COLLATE utf8_unicode_ci
+WHERE popularity.beer_id NOT IN store_items.beer_id
+WHERE shop_id = 7
+GROUP BY store_shop.id, popularity.beer_id
+ORDER BY store_shop.id, popularity.cnt DESC

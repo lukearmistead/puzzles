@@ -99,6 +99,23 @@ def rectangle_overlap(rec1, rec2):
     ''' takes the coordinates and dimensions of two rectangles as a dictionary
     and returns the coordinates and dimensions of the overlapping space
     input example:
+    rec1 = {
+        # coordinates of bottom-left corner
+        'left_x': 0,
+        'bottom_y': 5,
+        # width and height
+        'width': 10,
+        'height': 10
+    }
+    rec2 = {
+        # coordinates of bottom-left corner
+        'left_x': 1,
+        'bottom_y': 6,
+        # width and height
+        'width': 10,
+        'height': 10
+    }
+    output example
     my_rectangle = {
         # coordinates of bottom-left corner
         'left_x': 1,
@@ -127,23 +144,56 @@ def rectangle_overlap(rec1, rec2):
     rec_out['width'] = min(rec1['top_y'], rec1['top_y']) - rec_out['bottom_y'] 
     return rec_out    
 
+def _get_letters(numbers):
+    """Helper function to return a list of the lists of letters associated with
+    each number in the phone number
+    """
+    number_index = {
+        '2': ['a', 'b', 'c'],
+        '3': ['d', 'e', 'f'],
+        '4': ['g', 'h', 'i'],
+        '5': ['j', 'k', 'l'],
+        '6': ['m', 'n', 'o'],
+        '7': ['p', 'q', 'r', 's'],
+        '8': ['t', 'u', 'v'],
+        '9': ['w', 'x', 'y', 'z']
+    }
+    letters = [number_index[number] for number in numbers]
+    return letters
+
+
+def _get_letter_combis(output, remaining_letters):
+    """Recursively finds all of the combinations of letters associated with
+    each number in the entry
+    """
+    if not remaining_letters:
+        return output
+    letters = remaining_letters.pop()
+    new_output = []
+    if not output:
+        new_output = letters
+    else:
+        for entry in output:
+            for letter in letters:
+                combi = entry + letter
+                new_output.append(entry + letter)
+    return _get_letter_combis(new_output, remaining_letters)
+
+
+def phone_number_letters(numbers):
+    """Parent function for the following problem:
+
+    Given a digit string, return all possible letter combinations that the 
+    number could represent.
+
+    Input:Digit string "23"
+    Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+
+    A mapping of digit to letters (just like on the telephone buttons) is given below.
+    """
+    letters = _get_letters(numbers)
+    return _get_letter_combis([], letters)
+
+
 if __name__ == '__main__':
-    rec1 = {
-        # coordinates of bottom-left corner
-        'left_x': 0,
-        'bottom_y': 5,
-        # width and height
-        'width': 10,
-        'height': 10
-    }
-    rec2 = {
-        # coordinates of bottom-left corner
-        'left_x': 1,
-        'bottom_y': 6,
-        # width and height
-        'width': 10,
-        'height': 10
-    }
-
-    print rectangle_overlap(rec1, rec2)
-
+    print phone_number_letters('2347')
