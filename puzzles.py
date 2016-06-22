@@ -191,9 +191,27 @@ def phone_number_letters(numbers):
 
     A mapping of digit to letters (just like on the telephone buttons) is given below.
     """
+    if len(numbers) == 0:
+        return []
     letters = _get_letters(numbers)
     return _get_letter_combis([], letters)
 
 
+def count_steps(steps):
+    """You are climbing a stair case. It takes n steps to reach to the top.
+    Each time you can either climb 1 or 2 steps. In how many distinct ways can
+    you climb to the top?
+    """
+    print steps
+    if steps == 0:
+        print 'Found 1!'
+        return 1
+    elif steps - 2 >= 0:
+        return count_steps(steps - 2) + count_steps(steps - 1)
+    else:
+        return count_steps(steps - 1)
+
+
 if __name__ == '__main__':
-    print phone_number_letters('2347')
+    a = count_steps(5)
+
