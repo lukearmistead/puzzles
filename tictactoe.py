@@ -25,6 +25,10 @@ class ttt(object):
             self.active_player = 1
             
     def check_board(self):
+        if 0 not in [entry for row in self.board for entry in row]:
+            print 'cats game, sorry you two'
+            self.keep_playing=False
+            return
         for i, row in enumerate(self.board):
             col = self.board[:][i]
             if sum(row) == 30 or sum(col) == 30:
@@ -41,9 +45,6 @@ class ttt(object):
         elif sum(diagonal) == 3 or sum(other_diagonal) == 3:
             print 'player 1 wins!'
             self.keep_playing = False
-        if 0 not in [entry for row in self.board for entry in row]:
-            print 'cats game, sorry you two'
-            self.keep_playing=False
 
     def display_board(self):
         mask = {10: 'X', 1: 'O', 0: '.'}
@@ -56,6 +57,8 @@ def main():
     while game.keep_playing:
         game.display_board()
         game.check_board()
+        if not game.keep_playing:
+            break
         game.take_turn()
         game.switch_players()
     
