@@ -212,6 +212,23 @@ def count_steps(steps):
         return count_steps(steps - 1)
 
 
-if __name__ == '__main__':
-    a = count_steps(5)
+def get_site_limit_exceeders(T, window=2, frame=3):
+    out = []
+    adr = []
+    for i, t in enumerate(T):
+        suspects = []
+        for t2 in T[i:]:
+            if t2 - t < frame:
+                suspects.append(t2)
+        try:
+            for suspect in range(i + window, len(suspects)):
+                if suspect not in adr:
+                    adr.append(suspect)
+                    out.append(T[suspect])
+        except:
+            pass
+    return out
 
+
+if __name__ == '__main__':
+    print get_site_limit_exceeders([1,1,2,5,6,8])

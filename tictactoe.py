@@ -6,13 +6,16 @@ class ttt(object):
     
     def take_turn(self):
         # check for game over
-        print 'player %s select move coordinates (x, y)' % self.active_player
+        if self.active_player == 1:
+            print 'player %s select move coordinates (x, y)' % 'O'
+        elif self.active_player == 10:
+            print 'player %s select move coordinates (x, y)' % 'X'
         y = int(raw_input('enter x > '))
         x = int(raw_input('enter y > '))
         # check to see if spot is taken
         while self.board[x][y] > 0:
             print 'that spot is taken, please try again'
-            print 'player %s select move coordinates (x, y)' % self.active_player
+            print 'player %s, select move coordinates (x, y)' % self.active_player
             y = int(raw_input('enter x > '))
             x = int(raw_input('enter y > '))
         ### Add check to make sure coordinates are within board bounds
