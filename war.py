@@ -1,3 +1,6 @@
+""" Just a simple implementation of war. Ends in an error because in war, no
+one really wins.
+"""
 from random import shuffle
 
 class Game(object):

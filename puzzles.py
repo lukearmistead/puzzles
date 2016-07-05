@@ -1,6 +1,6 @@
 from __future__ import division
 from random import shuffle
-
+from collections import Counter
 
 def top_tweets(tweets, top):
     '''returns the most common <top> entries from a list of tweets'''
@@ -213,6 +213,10 @@ def count_steps(steps):
 
 
 def get_site_limit_exceeders(T, window=2, frame=3):
+    """Ask Jason on this one, something to do with the number of visits
+    within a certain timeframe 
+    """
+    print get_site_limit_exceeders([1,1,2,5,6,8])
     out = []
     adr = []
     for i, t in enumerate(T):
@@ -230,5 +234,63 @@ def get_site_limit_exceeders(T, window=2, frame=3):
     return out
 
 
+    """Give a list of strings, find the mapping from 1-26 for each string 
+    that maximize the value for each string. No distingulish between capital 
+    letter and lower case, other characters do not count.
+    """
+        
+
+def die_hard_3_water_measurer(x, y, z):
+    """You are given two jugs with capacities x and y litres. There is an 
+    infinite amount of water supply available. You need to determine whether 
+    it is possible to measure exactly z litres using these two jugs.
+
+    If z liters of water is measurable, you must have z liters of water 
+    contained within one or both buckets by the end.
+
+    https://leetcode.com/problems/water-and-jug-problem/
+    https://www.youtube.com/watch?v=BVtQNK_ZUJg
+
+    Input: x = 3, y = 5, z = 4
+    Output: True
+    
+    Input: x = 2, y = 6, z = 5
+    Output: False
+
+    Test cases:
+    print die_hard_3_water_measurer(5, 3, 4) == True
+    print die_hard_3_water_measurer(3, 5, 4) == True
+    print die_hard_3_water_measurer(3, 5, 7) == True
+    print die_hard_3_water_measurer(3, 4, 2) == True
+    print die_hard_3_water_measurer(3, 7, 4) == True
+    print die_hard_3_water_measurer(2, 6, 5) == False
+    print die_hard_3_water_measurer(2, 6, 3) == False
+    """
+    # check for obvious edge cases
+    if x + y < z:
+        return False
+    elif x == z or y == z or x + y == z:
+        return True
+    elif x == y:
+        return False
+    elif x % 2 == 0 and y % 2 == 0 and z % 2 != 0:
+        return False
+    # find larger jugs for easy coding
+    bj, lj = max(x, y), min(x, y)
+    # algorithm part
+    multiples = int((bj + lj) / lj + 2)
+    for multiple in xrange(multiples):
+        if abs(lj * (multiple + 1) - bj) == z:
+            return True
+    return False
+
 if __name__ == '__main__':
-    print get_site_limit_exceeders([1,1,2,5,6,8])
+    print die_hard_3_water_measurer(5, 3, 4) == True
+    print die_hard_3_water_measurer(3, 5, 4) == True
+    print die_hard_3_water_measurer(3, 5, 7) == True
+    print die_hard_3_water_measurer(3, 4, 2) == True
+    print die_hard_3_water_measurer(3, 7, 4) == True
+    print die_hard_3_water_measurer(2, 6, 5) == False
+    print die_hard_3_water_measurer(2, 6, 3) == False
+
+
