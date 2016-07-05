@@ -112,6 +112,6 @@ if __name__ == '__main__':
     while not game.winner:
         game.count_decks()
         game.play_turn()
-        # print 'keep playing?'
-        # if raw_input():
-        #     continue
+        print 'keep playing?'
+        if raw_input():
+            continue
