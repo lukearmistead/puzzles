@@ -1,6 +1,6 @@
 from __future__ import division
 from random import shuffle
-from collections import Counter
+from collections import Counter, defaultdict
 
 def top_tweets(tweets, top):
     '''returns the most common <top> entries from a list of tweets'''
@@ -284,13 +284,38 @@ def die_hard_3_water_measurer(x, y, z):
             return True
     return False
 
+
+def largest_string_value(str_lst):
+    """Takes a list of strings and returns a list of the largest values
+    that can be created by individually assigning the letters to a number
+    1-26
+    """
+    out = []
+    for string in str_lst:
+        out.append(_get_string_value(string))
+    return out
+    
+def _get_string_value(string):
+    """Helper function for largest_string_value that extracts the greatest 
+    value from a string
+    test case:
+    print largest_string_value(['pprint', 'abc']) == [26 + 26 + 25 + 24 + 23 + 22, 26 + 25 + 24]
+
+    """
+
+    # gets the counts of each character and returns an ordered list of tuples
+    letter_freq = Counter(string)
+    letter_freq = letter_freq.most_common(len(letter_freq))
+    vals = sorted(range(len(letter_freq) + 1, 27), reverse=True)
+    # creates dictionary to map highest values to most frequent characters
+    str_val_map = defaultdict()
+    for i, letter in enumerate(letter_freq):
+        str_val_map[letter[0]] = vals[i]
+    str_sum = 0
+    # maps the values to the characters
+    for letter in string:
+        str_sum += str_val_map[letter]
+    return str_sum
+
+
 if __name__ == '__main__':
-    print die_hard_3_water_measurer(5, 3, 4) == True
-    print die_hard_3_water_measurer(3, 5, 4) == True
-    print die_hard_3_water_measurer(3, 5, 7) == True
-    print die_hard_3_water_measurer(3, 4, 2) == True
-    print die_hard_3_water_measurer(3, 7, 4) == True
-    print die_hard_3_water_measurer(2, 6, 5) == False
-    print die_hard_3_water_measurer(2, 6, 3) == False
-
-
