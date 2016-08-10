@@ -96,3 +96,32 @@ from employee
     select max(salary * months) from employee
     )
 group by salary * months;
+
+/*
+Query the Western Longitude (LONG_W) for the largest Northern Latitude (LAT_N) in STATION that is less than . Round your answer to  decimal places.
+*/
+
+ SELECT ROUND(LONG_W, 4)
+FROM STATION
+WHERE LAT_N = (
+    SELECT MAX(LAT_N) FROM STATION WHERE LAT_N < 137.2345
+    );
+
+/*
+GET MEDIAN
+*/
+
+-- Gathers total row count
+set @ct := (SELECT COUNT(*) FROM STATION);
+-- Initializes row number at 0
+set @row_id := 0;
+ 
+-- Average for two median positions in the case of an even number of rows
+SELECT ROUND(AVG(LAT_N), 4) AS median
+FROM (
+    SELECT * FROM STATION ORDER BY LAT_N
+    ) AS S1
+-- Simultaneously increments row_id to get a number for each row and
+-- performs the check that the row is in the middle
+WHERE (SELECT @row_id := @row_id + 1)
+BETWEEN @ct/2.0 AND @ct/2.0 + 1;
