@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+from sodapy import Socrata
 from time import time
 import osmnx as ox  
 import networkx as nx
@@ -43,9 +44,6 @@ def get_traffic_data():
     # pip install pandas
     # pip install sodapy
 
-    import pandas as pd
-    from sodapy import Socrata
-
     # Unauthenticated client only works with public data sets. Note 'None'
     # in place of application token, and no username or password:
     client = Socrata("data.cityofnewyork.us", None)
@@ -66,11 +64,27 @@ def get_traffic_data():
     print(results_df.info())
 
 
+def get_weather_data():
+    # Data documentation https://www1.ncdc.noaa.gov/pub/data/cdo/documentation/GHCND_documentation.pdf 
+    # URL pulls in Central Park weather data
+    weather = pd.read_csv('https://www.ncei.noaa.gov/orders/cdo/2809500.csv')
+    weather = weather[['DATE', 'PRCP', 'SNOW', 'TMIN', 'TMAX']]
+    weather.columns = ['date', 'rain_inches', 'snow_inches', 'temp_min_f', 'temp_max_f']
+    return weather
+
 
 if __name__ == '__main__':
-
     df = pd.read_csv('~/Downloads/df_train_sample.csv')
     df.info()
+
+    # Weather
+    print('Appending weather data')
+    weather = get_weather_data()
+    print('Got weather')
+    df = df.merge(weather, on='date', how='left')
+    df.info()
+
+    # Travel minutes
     travel_minutes = []
     NYC = MapGraph(place="New York City, NY, USA", transportation_mode="drive")
     for _, row in df[['start_lng', 'start_lat', 'end_lng', 'end_lat']].iterrows():
@@ -78,5 +92,10 @@ if __name__ == '__main__':
         destination = GPSCoordinate(row['end_lng'], row['end_lat'])
         travel_minutes.append(NYC.estimate_travel_minutes(origin, destination))
     df['travel_minutes'] = travel_minutes
-    print(df['travel_minutes']) 
-    
+    print(df['travel_minutes'])
+
+
+    # Weather
+    weather = get_weather_data()
+    df = df.merge(weather, on='date', how='left')
+    df.head()
