@@ -37,31 +37,58 @@ class MapGraph():
         return self.estimate_travel_seconds(orig, dest) / 60.0
 
 
+def twelve_hour_time_parts(time, hour_delimiter=':'):
+    time_parts = time.split(hour_delimiter)
+    hour = int(time_parts[0])
+    period = time_parts[-1][-2:].lower()
+    return hour, period
+
+def twelve_hour_to_military(time):
+    hour, period = twelve_hour_time_parts(time)
+    if hour == 12 and period == 'am':
+        return 0
+    elif hour == 12 and period == 'pm':
+        return hour
+    elif period == 'pm':
+        return hour + 12
+    else:
+        return hour
+
+
 def get_traffic_data():
-    #!/usr/bin/env python
+    # This dataset unfortunately proved to have more holes than observations
+    # We recommend seeking a different source
+    traffic = pd.read_csv('https://data.cityofnewyork.us/api/views/ertz-hr4r/rows.csv?accessType=DOWNLOAD')
 
-    # make sure to install these packages before running:
-    # pip install pandas
-    # pip install sodapy
-
-    # Unauthenticated client only works with public data sets. Note 'None'
-    # in place of application token, and no username or password:
-    client = Socrata("data.cityofnewyork.us", None)
-
-    # Example authenticated client (needed for non-public datasets):
-    # client = Socrata(data.cityofnewyork.us,
-    #                  MyAppToken,
-    #                  userame="user@example.com",
-    #                  password="AFakePassword")
-
-    # First 2000 results, returned as JSON from API / converted to Python list of
-    # dictionaries by sodapy.
-    results = client.get("ertz-hr4r", limit=2000)
-
+    print(traffic.head())
+    traffic.info()
     # Convert to pandas DataFrame
-    results_df = pd.DataFrame.from_records(results)
-    print(results_df.head())
-    print(results_df.info())
+    volume_cols = [
+       '12:00-1:00 AM', '1:00-2:00AM', '2:00-3:00AM', '3:00-4:00AM',
+       '4:00-5:00AM', '5:00-6:00AM', '6:00-7:00AM', '7:00-8:00AM',
+       '8:00-9:00AM', '9:00-10:00AM', '10:00-11:00AM', '11:00-12:00PM',
+       '12:00-1:00PM', '1:00-2:00PM', '2:00-3:00PM', '3:00-4:00PM',
+       '4:00-5:00PM', '5:00-6:00PM', '6:00-7:00PM', '7:00-8:00PM',
+       '8:00-9:00PM', '9:00-10:00PM', '10:00-11:00PM', '11:00-12:00AM'
+       ]
+    traffic[volume_cols] = traffic[volume_cols].fillna(0).astype(int)
+    traffic = traffic.groupby('Date').sum()[volume_cols]
+    traffic.head()
+    traffic = traffic.melt(
+        value_vars=volume_cols, 
+        var_name='hour_of_day', 
+        value_name='vehicle_count', 
+        ignore_index=False
+        )
+    traffic.head()
+    traffic['hour_of_day'] = traffic['hour_of_day'] \
+        .apply(lambda time: twelve_hour_to_military(time))
+    traffic = traffic.reset_index(drop=False)
+    traffic['Date'] = pd.to_datetime(traffic['Date']).dt.date
+    traffic = traffic.rename(columns={'Date': 'date'})
+    traffic.columns
+    print(traffic.head())
+    return traffic
 
 
 def get_weather_data():
@@ -75,6 +102,7 @@ def get_weather_data():
 
 if __name__ == '__main__':
     df = pd.read_csv('~/Downloads/df_train_sample.csv')
+    df['date'] = pd.to_datetime(df['date']).dt.date
     df.info()
 
     # Weather
@@ -95,7 +123,7 @@ if __name__ == '__main__':
     print(df['travel_minutes'])
 
 
-    # Weather
-    weather = get_weather_data()
-    df = df.merge(weather, on='date', how='left')
-    df.head()
+    # Traffic
+    traffic = get_traffic_data()
+    df = df.merge(traffic, on=['date', 'hour_of_day'], how='left')
+    df.info()
